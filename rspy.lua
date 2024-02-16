@@ -507,9 +507,7 @@ local function onBarInput(input)
         end
 
         connections["drag"] = input.Changed:Connect(function(inputState)
-            if inputState == Enum.UserInputState.Begin then
-                updatePosition()
-            elseif inputState == Enum.UserInputState.Change then
+            if inputState == Enum.UserInputState.Begin or inputState == Enum.UserInputState.Change then
                 updatePosition()
             elseif inputState == Enum.UserInputState.End then
                 connections["drag"]:Disconnect()
