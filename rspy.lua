@@ -485,7 +485,7 @@ end
 
 --- Drags gui (so long as mouse is held down)
 --- @param input InputObject
-function onBarInput(input)
+local function onBarInput(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         local lastPos = UserInputService:GetMouseLocation()
         local mainPos = Background.AbsolutePosition
@@ -495,6 +495,7 @@ function onBarInput(input)
         local function updatePosition()
             local newPos = UserInputService:GetMouseLocation()
             if newPos ~= lastPos then
+                local viewportSize = workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize or Vector2.new(1920, 1080)
                 local currentX = math.clamp(offset.X + newPos.X, 0, viewportSize.X - (sideClosed and 131 or TopBar.AbsoluteSize.X))
                 local currentY = math.clamp(offset.Y + newPos.Y, 0, viewportSize.Y - (closed and 19 or Background.AbsoluteSize.Y) - 36)
 
@@ -815,7 +816,7 @@ function backgroundUserInput(input)
             end
         end))
     elseif isInDragRange(mousePos) then
-        onBarInput(input)
+        onBarInput(UserInputService.InputBegan)
     end
 end
 
