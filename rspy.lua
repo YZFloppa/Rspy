@@ -492,29 +492,29 @@ function onBarInput(input)
         local offset = mainPos - lastPos
         local currentPos = offset + lastPos
 
-        if not connections["drag"] then
-            connections["drag"] = RunService.RenderStepped:Connect(function()
-                local newPos = UserInputService:GetMouseLocation()
-                if newPos ~= lastPos then
-                    local currentX = math.clamp(offset.X + newPos.X, 0, viewportSize.X - (sideClosed and 131 or TopBar.AbsoluteSize.X))
-                    local currentY = math.clamp(offset.Y + newPos.Y, 0, viewportSize.Y - (closed and 19 or Background.AbsoluteSize.Y) - 36)
+        local function updatePosition()
+            local newPos = UserInputService:GetMouseLocation()
+            if newPos ~= lastPos then
+                local currentX = math.clamp(offset.X + newPos.X, 0, viewportSize.X - (sideClosed and 131 or TopBar.AbsoluteSize.X))
+                local currentY = math.clamp(offset.Y + newPos.Y, 0, viewportSize.Y - (closed and 19 or Background.AbsoluteSize.Y) - 36)
 
-                    currentPos = Vector2.new(currentX, currentY)
-                    lastPos = newPos
+                currentPos = Vector2.new(currentX, currentY)
+                lastPos = newPos
 
-                    TweenService:Create(Background, TweenInfo.new(0.1), {Position = UDim2.new(0, currentPos.X, 0, currentPos.Y)}):Play()
-                end
-            end)
+                TweenService:Create(Background, TweenInfo.new(0.1), {Position = UDim2.new(0, currentPos.X, 0, currentPos.Y)}):Play()
+            end
         end
 
-        table.insert(connections, UserInputService.InputEnded:Connect(function(inputE)
-            if input == inputE then
-                if connections["drag"] then
-                    connections["drag"]:Disconnect()
-                    connections["drag"] = nil
-                end
+        connections["drag"] = input.Changed:Connect(function(inputState)
+            if inputState == Enum.UserInputState.Begin then
+                updatePosition()
+            elseif inputState == Enum.UserInputState.Change then
+                updatePosition()
+            elseif inputState == Enum.UserInputState.End then
+                connections["drag"]:Disconnect()
+                connections["drag"] = nil
             end
-        end))
+        end)
     end
 end
 
